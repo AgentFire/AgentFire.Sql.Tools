@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AgentFire.Sql.Tools</RootNamespace>
-    <AssemblyName>Sql Tools</AssemblyName>
+    <AssemblyName>AgentFire.Sql.Tools</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -45,6 +45,9 @@
     <Compile Include="ICrud.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TranScope.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sql Tools.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

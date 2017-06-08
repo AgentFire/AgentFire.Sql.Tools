@@ -7,7 +7,7 @@ namespace AgentFire.Sql.Tools
         public static readonly IsolationLevel IsolationLevel = IsolationLevel.Serializable;
         private static readonly TransactionOptions _options = new TransactionOptions() { IsolationLevel = IsolationLevel };
 
-        private readonly TransactionScope _scope = new TransactionScope(TransactionScopeOption.RequiresNew, _options, TransactionScopeAsyncFlowOption.Enabled);
+        private readonly TransactionScope _scope = new TransactionScope(TransactionScopeOption.Required, _options, TransactionScopeAsyncFlowOption.Enabled);
 
         public void Commit() => _scope.Complete();
         protected override void DisposeInternal() => _scope.Dispose();

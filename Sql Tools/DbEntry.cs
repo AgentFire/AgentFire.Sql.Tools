@@ -17,7 +17,7 @@ namespace AgentFire.Sql.Tools
 
         #region Crud Impl
 
-        public sealed class CrudImpl : ICrud<TDbContext>
+        private sealed class CrudImpl : ICrud<TDbContext>
         {
             #region PK Finder
 
