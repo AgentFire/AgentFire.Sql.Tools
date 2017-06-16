@@ -125,9 +125,8 @@ namespace AgentFire.Sql.Tools
         public static T PickData<T>(Func<TDbContext, T> selector)
         {
             T result;
-            TDbContext context = new TDbContext();
 
-            using (DbEntry db = new DbEntry(EntryMode.Manual, context))
+            using (TDbContext context = new TDbContext())
             {
                 result = selector(context);
             }
@@ -144,21 +143,15 @@ namespace AgentFire.Sql.Tools
         public EntryMode Mode { get; }
         public DataContext Context { get; }
 
-        private readonly TranScope _scope = new TranScope();
-
         public DbEntry(EntryMode mode, DataContext context)
         {
             Mode = mode;
             Context = context;
         }
 
-        public void Commit()
-        {
-            _scope.Commit();
-        }
         public void Submit()
         {
-            Context.SubmitChanges(ConflictMode.FailOnFirstConflict);
+            Context.SubmitChanges();
         }
 
         public async Task DeadlockAwareSubmit(int retryCount = 3, int minDelay = 300, int randomizedDelay = 600)
@@ -193,10 +186,8 @@ namespace AgentFire.Sql.Tools
             if (Mode == EntryMode.Automatic)
             {
                 Submit();
-                Commit();
             }
 
-            _scope.Dispose();
             Context.Dispose();
         }
     }

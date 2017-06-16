@@ -44,7 +44,6 @@
     <Compile Include="EntryMode.cs" />
     <Compile Include="ICrud.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TranScope.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Sql Tools.nuspec" />
