@@ -133,6 +133,10 @@ namespace AgentFire.Sql.Tools
 
             return result;
         }
+        public static T[] PickDataToArray<T>(Func<TDbContext, IQueryable<T>> selector)
+        {
+            return PickData(db => selector(db).ToArray());
+        }
     }
 
     public class DbEntry : DisposableObject
