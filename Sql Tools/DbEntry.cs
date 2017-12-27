@@ -92,22 +92,7 @@ namespace AgentFire.Sql.Tools
 
             public bool Modify<T>(int id, EntityAction<TDbContext, T> modifier) where T : class
             {
-                TDbContext context = new TDbContext();
-
-                using (DbEntry db = new DbEntry(EntryMode.Automatic, context))
-                {
-                    Table<T> table = db.Context.GetTable<T>();
-                    T entity = table.Where(GetIdSelector<T>(id)).SingleOrDefault();
-
-                    if (entity == null)
-                    {
-                        return false;
-                    }
-
-                    modifier(context, entity);
-                }
-
-                return true;
+                return Modify(GetIdSelector<T>(id), modifier) > 0;
             }
             public int Modify<T>(Expression<Func<T, bool>> predicateExpression, EntityAction<TDbContext, T> modifier) where T : class
             {
