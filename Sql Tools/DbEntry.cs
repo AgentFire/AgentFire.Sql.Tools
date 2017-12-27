@@ -28,7 +28,10 @@ namespace AgentFire.Sql.Tools
                 private static PropertyInfo Initializer()
                 {
                     var query = from property in typeof(T).GetProperties()
-                                let attr = property.GetCustomAttributes<ColumnAttribute>().Where(T => T.IsPrimaryKey).FirstOrDefault()
+                                let q = from ca in property.GetCustomAttributes<ColumnAttribute>()
+                                        where ca.IsPrimaryKey
+                                        select ca
+                                let attr = q.SingleOrDefault()
                                 where attr != null
                                 where attr.IsPrimaryKey
                                 select property;
@@ -59,20 +62,17 @@ namespace AgentFire.Sql.Tools
 
             public bool TryDelete<T>(int id) where T : class
             {
+                return TryDelete(GetIdSelector<T>(id)) > 0;
+            }
+            public int TryDelete<T>(Expression<Func<T, bool>> predicateExpression) where T : class
+            {
                 using (DbEntry db = new DbEntry(EntryMode.Automatic, new TDbContext()))
                 {
                     Table<T> table = db.Context.GetTable<T>();
-                    T entity = table.Where(GetIdSelector<T>(id)).SingleOrDefault();
-
-                    if (entity == null)
-                    {
-                        return false;
-                    }
-
-                    table.DeleteOnSubmit(entity);
+                    T[] entities = table.Where(predicateExpression).ToArray();
+                    table.DeleteAllOnSubmit(entities);
+                    return entities.Length;
                 }
-
-                return true;
             }
 
             public int Create<T>(EntityAction<TDbContext, T> initializer) where T : class, new()
@@ -89,6 +89,7 @@ namespace AgentFire.Sql.Tools
 
                 return ExpressionCache<T>.IDPropertyCompiled(entity);
             }
+
             public bool Modify<T>(int id, EntityAction<TDbContext, T> modifier) where T : class
             {
                 TDbContext context = new TDbContext();
@@ -107,6 +108,23 @@ namespace AgentFire.Sql.Tools
                 }
 
                 return true;
+            }
+            public int Modify<T>(Expression<Func<T, bool>> predicateExpression, EntityAction<TDbContext, T> modifier) where T : class
+            {
+                TDbContext context = new TDbContext();
+
+                using (DbEntry db = new DbEntry(EntryMode.Automatic, context))
+                {
+                    Table<T> table = db.Context.GetTable<T>();
+                    T[] entities = table.Where(predicateExpression).ToArray();
+
+                    foreach (T entity in entities)
+                    {
+                        modifier(context, entity);
+                    }
+
+                    return entities.Length;
+                }
             }
 
             public T Get<T>(int id) where T : class
