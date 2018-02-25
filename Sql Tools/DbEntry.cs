@@ -140,6 +140,18 @@ namespace AgentFire.Sql.Tools
         {
             return PickData(db => selector(db).ToArray());
         }
+
+        public static async Task<T> PickDataAsync<T>(Func<TDbContext, Task<T>> taskFactory)
+        {
+            T result;
+
+            using (TDbContext context = new TDbContext())
+            {
+                result = await taskFactory(context).ConfigureAwait(false);
+            }
+
+            return result;
+        }
     }
 
     public class DbEntry : DisposableObject
