@@ -12,7 +12,7 @@ Contains some helpful Linq-to-Sql (`DataContext`-based) classes, which help you 
                select new { Group = g, IsThisConvenient = (bool?)true };
     });
     
-# Or:
+## Or:
 
     int id = 123;
 
@@ -22,4 +22,4 @@ Contains some helpful Linq-to-Sql (`DataContext`-based) classes, which help you 
         group.State = 2;
     });
     
-# And more.
+### And more.
