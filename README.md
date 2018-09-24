@@ -8,7 +8,8 @@ Contains some helpful Linq-to-Sql (`DataContext`-based) classes, which help you 
     var data = DbEntry<DbContext>.PickDataToArray(db =>
     {
         return from g in db.Groups
-                where g.Name.Contains(name);
+               where g.Name.Contains(name)
+               select new { Group = g, IsThisConvenient = (bool?)true };
     });
     
 # Or:
