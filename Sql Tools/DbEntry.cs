@@ -40,7 +40,10 @@ namespace AgentFire.Sql.Tools
                 }
             }
 
-            private static PropertyInfo GetPrimaryKeyFor<TEntity>() => Cache<TEntity>.LazyProp.Value;
+            private static PropertyInfo GetPrimaryKeyFor<TEntity>()
+            {
+                return Cache<TEntity>.LazyProp.Value;
+            }
 
             #endregion
             #region Expression Cache
@@ -115,6 +118,30 @@ namespace AgentFire.Sql.Tools
             public T Get<T>(int id) where T : class
             {
                 return PickData(db => db.GetTable<T>().Where(GetIdSelector<T>(id)).SingleOrDefault());
+            }
+
+            public bool CreateOrModify<T>(Expression<Func<T, bool>> predicateExpression, EntityAction<TDbContext, T> createActions, EntityAction<TDbContext, T> modifier) where T : class, new()
+            {
+                bool created = false;
+                TDbContext context = new TDbContext();
+
+                using (DbEntry db = new DbEntry(EntryMode.Automatic, context))
+                {
+                    Table<T> table = db.Context.GetTable<T>();
+                    T entity = table.Where(predicateExpression).SingleOrDefault();
+
+                    if (entity == null)
+                    {
+                        entity = new T();
+                        createActions?.Invoke(context, entity);
+                        table.InsertOnSubmit(entity);
+                        created = true;
+                    }
+
+                    modifier(context, entity);
+                }
+
+                return created;
             }
         }
 

@@ -14,5 +14,7 @@ namespace AgentFire.Sql.Tools
 
         bool Modify<T>(int id, EntityAction<TDbContext, T> modifier) where T : class;
         int Modify<T>(Expression<Func<T, bool>> predicateExpression, EntityAction<TDbContext, T> modifier) where T : class;
+
+        bool CreateOrModify<T>(Expression<Func<T, bool>> predicateExpression, EntityAction<TDbContext, T> createActions, EntityAction<TDbContext, T> modifier) where T : class, new();
     }
 }
