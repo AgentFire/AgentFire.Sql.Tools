@@ -80,6 +80,10 @@ namespace AgentFire.Sql.Tools
 
             public int Create<T>(EntityAction<TDbContext, T> initializer) where T : class, new()
             {
+                return Create(initializer, W => ExpressionCache<T>.IDPropertyCompiled(W));
+            }
+            public TResult Create<T, TResult>(EntityAction<TDbContext, T> initializer, Func<T, TResult> afterInsert) where T : class, new()
+            {
                 T entity = new T();
 
                 TDbContext context = new TDbContext();
@@ -88,9 +92,9 @@ namespace AgentFire.Sql.Tools
                     Table<T> table = db.Context.GetTable<T>();
                     initializer(context, entity);
                     table.InsertOnSubmit(entity);
-                } // Automatic SubmitChanges() will write 'id' property into the entity instance.
+                }
 
-                return ExpressionCache<T>.IDPropertyCompiled(entity);
+                return afterInsert(entity);
             }
 
             public bool Modify<T>(int id, EntityAction<TDbContext, T> modifier) where T : class
